@@ -1,9 +1,26 @@
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
+/**
+ * DBClient class
+ *
+ * @class DBClient
+ * @property {string} host - MongoDB host
+ * @property {number} port - MongoDB port
+ * @property {string} database - MongoDB database
+ * @property {MongoClient} client - MongoClient instance
+ * @property {Db} databaseInstance - MongoDB database instance
+ */
 class DBClient {
+  /**
+   * Constructor
+   *
+   * @param {string} [host=localhost] - MongoDB host
+   * @param {number} [port=27017] - MongoDB port
+   * @param {string} [database=users_manager] - MongoDB database
+   */
   constructor() {
     this.host = process.env.DB_HOST || 'localhost';
     this.port = process.env.DB_PORT || 27017;
-    this.database = process.env.DB_DATABASE || 'files_manager';
+    this.database = process.env.DB_DATABASE || 'users_manager';
 
     this.client = new MongoClient(`mongodb://${this.host}:${this.port}`, { useNewUrlParser: true, useUnifiedTopology: true });
     (async () => {
@@ -16,28 +33,26 @@ class DBClient {
       }
     })();
   }
+
+  /**
+   * Check if the database is alive
+   *
+   * @returns {boolean} - True if connected, False otherwise
+   */
   isAlive() {
     return this.client.topology.isConnected();
   }
+
+  /**
+   * Get the number of users in the database
+   *
+   * @returns {Promise<number>} - Number of users
+   */
   async nbUsers() {
     return this.databaseInstance.collection('users').countDocuments();
 
   }
-
-  async nbFiles() {
-    return this.databaseInstance.collection('files').countDocuments();
-
-  }
-  async addUser(email, password) {
-    const user = {
-      email,
-      password
-    }
-    const user_count = await this.databaseInstance.collection('users').find({ email: email }).count();
-    if (user_count != 0) return null;
-    await this.databaseInstance.collection('users').insertOne(user);
-    return user;
-  }
 }
+
 const dbClient = new DBClient();
 export default dbClient;
