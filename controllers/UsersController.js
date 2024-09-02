@@ -38,7 +38,7 @@ export default class UsersController {
   static async getMe(req, res) {
     try {
       const auth_header = req.headers["x-token"];
-      const current_user_id = await redisClient.get(auth_header);
+      const current_user_id = await redisClient.get(`auth_${auth_header}`);
       const current_user = await dbClient.getUserById(current_user_id);
       const email = current_user.email;
       return res.send({ id: current_user_id, email: email });

@@ -27,7 +27,7 @@ export default class AuthController {
       return res.status(401).send({ error: "Unauthorized" });
     }
     const auth_token = uuidv4();
-    redisClient.set(auth_token, current_user._id.toString(), 86400);
+    redisClient.set(`auth_${auth_token}`, current_user._id.toString(), 86400);
     return res.status(200).send({ token: auth_token });
   }
 
@@ -39,16 +39,15 @@ export default class AuthController {
    */
   static async getDisconnect(req, res) {
     const auth_header = req.headers["x-token"];
-    const confirm_auth_header = await redisClient.get(auth_header);
+    const confirm_auth_header = await redisClient.get(`auth_${auth_header}`);
     if (auth_header == undefined || confirm_auth_header == undefined) {
       return res.status(401).send({ error: "Unauthorized" });
     }
     try {
-      redisClient.del(auth_header);
+      redisClient.del(`auth_${auth_header}`);
       return res.status(204).send({});
     } catch (error) {
       return res.status(401).send({ message: error });
     }
   }
 }
-
