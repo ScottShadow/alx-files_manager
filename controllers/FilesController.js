@@ -10,7 +10,9 @@ const asyncMkdir = util.promisify(mkdir);
 const asyncWriteFile = util.promisify(writeFile);
 
 // Set folder path, use environment variable or default to '/tmp/files_manager'
-const FOLDER_PATH = process.env.FOLDER_PATH || "/tmp/files_manager";
+const FOLDER_PATH = `${process.env.FOLDER_PATH || ''}`.trim().length > 0
+  ? process.env.FOLDER_PATH.trim()
+  : "/tmp/files_manager";
 
 export default class FilesController {
   static async postUpload(req, res) {
@@ -37,7 +39,7 @@ export default class FilesController {
 
       const type = req.body.type;
       if (!type || !["file", "folder", "image"].includes(type)) {
-        return res.status(400).send({ error: "Missing or invalid type" });
+        return res.status(400).send({ error: "Missing type" });
       }
 
       const data = req.body.data;
@@ -74,13 +76,13 @@ export default class FilesController {
           type,
           parentId,
           isPublic: req.body.isPublic || false,
-          localPath: newFolderPath,
+          //localPath: newFolderPath,
         };
 
         const newFolder = await dbClient.addFile(folderPayload);
         if (!newFolder) {
           return res.status(500).send({ error: "Failed to create folder" });
-        } delete newFolder.localPath;
+        }
         return res.status(201).send(newFolder);
       }
 
@@ -98,19 +100,22 @@ export default class FilesController {
           type,
           isPublic: req.body.isPublic || false,
           parentId,
-          localPath: filePath,
+          //localPath: filePath,
         };
 
         const newFile = await dbClient.addFile(filePayload);
         if (!newFile) {
           return res.status(500).send({ error: "Failed to create file" });
         }
-        delete newFile.localPath;
         return res.status(201).send(newFile);
       }
     } catch (e) {
       console.error(e);
       return res.status(500).send({ error: "Internal server error" });
     }
+  }
+  async getShow(req, res) {
+  }
+  async getIndex(req, res) {
   }
 }

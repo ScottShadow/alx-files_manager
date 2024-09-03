@@ -95,8 +95,6 @@ class DBClient {
     return user;
   }
   async getFileById(id) {
-    const all_files = await this.databaseInstance.collection('files').find().toArray();
-    console.log('All files:', JSON.stringify(all_files, null, 2));
     const file = await this.databaseInstance.collection('files').findOne({ _id: new ObjectId(id) });
     return file;
   }
