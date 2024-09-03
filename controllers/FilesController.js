@@ -1,5 +1,6 @@
 import dbClient from "../utils/db";
 import redisClient from "../utils/redis";
+import Queue from 'bull/lib/queue';
 import util from "util";
 import { v4 as uuidv4 } from 'uuid';
 import { mkdir, writeFile, existsSync } from "fs";
@@ -8,6 +9,7 @@ import path from "path";
 // Promisify the file system operations
 const asyncMkdir = util.promisify(mkdir);
 const asyncWriteFile = util.promisify(writeFile);
+const fileGenQueue = new Queue('thumbnail generation');
 
 // Set folder path, use environment variable or default to '/tmp/files_manager'
 const FOLDER_PATH = `${process.env.FOLDER_PATH || ''}`.trim().length > 0
@@ -107,6 +109,11 @@ export default class FilesController {
         if (!newFile) {
           return res.status(500).send({ error: "Failed to create file" });
         }
+        if (type === "image") {
+          const jobName = `Image thumbnail [${user._id}-${newFile._id}]`;
+          fileGenQueue.add({ userId: user._id, fileId: newFile._id, name: jobName });
+        }
+
         return res.status(201).send(newFile);
       }
     } catch (e) {
