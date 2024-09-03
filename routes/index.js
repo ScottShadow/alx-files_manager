@@ -3,6 +3,7 @@ import Appcontroller from '../controllers/AppController.js';
 import UsersController from '../controllers/UsersController.js';
 import AuthController from '../controllers/AuthController.js';
 import redisClient from '../utils/redis.js';
+import FilesController from '../controllers/FilesController.js';
 const router = express.Router();
 
 router.get('/status', (req, res) => {
@@ -30,5 +31,10 @@ router.get('/disconnect', (req, res) => {
 router.get('/users/me', (req, res) => {
   UsersController.getMe(req, res);
 });
+
+router.post('/files', (req, res) => {
+  FilesController.postUpload(req, res);
+})
+
 
 export default router

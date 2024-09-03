@@ -33,8 +33,8 @@ export default class AppController {
    */
   static async getStats(req, res) {
     res.status(200).json({
-      nbUsers: dbClient.nbUsers(),
-      nbFiles: dbClient.nbFiles(),
+      nbUsers: await dbClient.nbUsers(),
+      nbFiles: await dbClient.nbFiles(),
     });
   }
 
@@ -49,6 +49,8 @@ export default class AppController {
   static async getKeys(req, res) {
     res.status(200).json({
       keys: await redisClient.getKeys(),
+      files: await dbClient.Files(),
+      users: await dbClient.Users(),
     })
   }
 }

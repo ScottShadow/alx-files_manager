@@ -94,6 +94,26 @@ class DBClient {
     const user = await this.databaseInstance.collection('users').findOne({ _id: new ObjectId(id) });
     return user;
   }
+  async getFileById(id) {
+    const all_files = await this.databaseInstance.collection('files').find().toArray();
+    console.log('All files:', JSON.stringify(all_files, null, 2));
+    const file = await this.databaseInstance.collection('files').findOne({ _id: new ObjectId(id) });
+    return file;
+  }
+  async addFile(file_metadata) {
+    await this.databaseInstance.collection('files').insertOne(file_metadata);
+    return file_metadata;
+  }
+  async Files() {
+    const all_files = await this.databaseInstance.collection('files').find().toArray();
+    console.log('All files:', JSON.stringify(all_files, null, 2));
+    return all_files;
+  }
+  async Users() {
+    const all_users = await this.databaseInstance.collection('users').find().toArray();
+    console.log('All users:', JSON.stringify(all_users, null, 2));
+    return all_users;
+  }
 }
 const dbClient = new DBClient();
 export default dbClient;

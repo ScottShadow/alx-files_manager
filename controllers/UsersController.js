@@ -46,5 +46,7 @@ export default class UsersController {
       return res.status(401).send({ error: "Unauthorized" });
     }
   }
-}
 
+
+
+}

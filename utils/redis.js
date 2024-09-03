@@ -71,7 +71,9 @@ class RedisClient {
    */
   async getKeys() {
     const keysAsync = util.promisify(this.client.keys).bind(this.client);
-    return await keysAsync('*');
+    const keys = await keysAsync('*');
+    console.log(`Keys: ${keys}`);
+    return keys;
   }
 };
 
